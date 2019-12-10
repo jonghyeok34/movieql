@@ -1,0 +1,8 @@
+type Query{
+    person: Jonghyeok!
+}
+type Jonghyeok{
+    name: String!
+    age: Int!
+    gender: String!
+}
