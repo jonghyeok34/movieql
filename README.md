@@ -206,7 +206,7 @@ server.start(() => console.log("GraphQl Server Running"));
     }
     ```
 
-## 3. graphql list
+## 3. graphql list/ get by person id
 
 - file tree
 ```
@@ -235,7 +235,7 @@ export const people = [
 
 // get by id
 const getById = id => {
-  const filteredPerson = movies.filter(person => id === people.id);
+  const filteredPerson = people.filter(person => id === person.id);
   return filteredPerson[0];
 };
 
@@ -334,4 +334,221 @@ server.start(() => console.log("GraphQl Server Running"));
         }
     }
 
+    ```
+
+    - get person info by id
+    ```js
+    query{
+        person(id:1){
+            name
+            id
+        }
+    }
+    ```
+    - person info by id
+    ```js
+    {
+    "data": {
+        "person": {
+            "name": "Jonghyeok",
+            "id": 1
+            }
+        }
+    }
+    ```
+
+## 4. movie - Mutation
+
+1. db.js - movie
+
+```js
+export const movies = [
+  {
+    id: 0,
+    name: "Star Wars - 1",
+    score: 1
+  },
+  {
+    id: 1,
+    name: "Avengers - 1",
+    score: 8
+  },
+  {
+    id: 2,
+    name: "The Godfather - 1",
+    score: 9
+  },
+  {
+    id: 3,
+    name: "train to busan",
+    score: 8
+  }
+];
+
+export const getMovies = () => movies;
+
+export const getById = id => {
+  const filteredMovie = movies.filter(movie => id === movie.id);
+  return filteredMovie[0];
+};
+
+export const deleteMovie = id => {
+  const cleanedMovies = movies.filter(movie => movie.id !== id);
+  if (movies.lenght > cleanedMovies.length) {
+    movie = cleanedMovies;
+    return true;
+  } else {
+    return false;
+  }
+};
+
+export const addMovie = (name, score) => {
+  const newMovie = {
+    id: movies.length + 1,
+    name,
+    score
+  };
+  movies.push(newMovie);
+  return newMovie;
+};
+
+```
+
+2. schema.graphql
+```ts
+type Movie{
+    id: Int!
+    name: String!
+    score: Int!
+}
+
+
+type Query{
+    movies: [Movie]!
+    movie(id: Int!): Movie
+    
+}
+
+type Mutation {
+    addMovie(name: String!, score: Int!): Movie!
+    deleteMovie(id: Int!): Boolean!
+}
+```
+
+3. resolvers
+
+```js
+import { getMovies, getById, addMovie } from "./db";
+
+const resolvers = {
+  Query: {
+    movies: () => getMovies(),
+    movie: (_, { id }) => getById(id)
+  },
+  Mutation: {
+    addMovie: (_, { name, score }) => addMovie(name, score),
+    deleteMovie: (_, {id}) => deleteMovie(id)
+  }
+};
+
+export default resolvers;
+
+```
+
+4.  (localhost:4000)
+    - add movie
+    ```
+    mutation{
+        addMovie(name: "funnName", score:9){
+            name
+        }
+    }
+    ```
+
+    - add movie return
+    ```js
+    {
+    "data": {
+        "addMovie": {
+                "name": "funnName"
+            }
+        }
+    }
+    ```
+
+    - result 
+    
+    ```js
+    {
+        "data": {
+            "movies": [
+                {
+                    "name": "Star Wars - 1",
+                    "id": 0
+                },
+                {
+                    "name": "Avengers - 1",
+                    "id": 1
+                },
+                {
+                    "name": "The Godfather - 1",
+                    "id": 2
+                },
+                {
+                    "name": "train to busan",
+                    "id": 3
+                },
+                {
+                    "name": "funnName",
+                    "id": 5
+                }
+            ]
+        }
+    }
+    ```
+
+    - delete movie
+
+    ```
+    mutation{
+        deleteMovie(id:0){
+            name
+        }
+    }
+    ```
+    - delete movie return
+    ```js
+    {
+        "data": {
+            "deleteMovie": true
+        }
+    }
+    ```
+
+    - result 
+    
+    ```js
+    {
+        "data": {
+            "movies": [
+                
+                {
+                    "name": "Avengers - 1",
+                    "id": 1
+                },
+                {
+                    "name": "The Godfather - 1",
+                    "id": 2
+                },
+                {
+                    "name": "train to busan",
+                    "id": 3
+                },
+                {
+                    "name": "funnName",
+                    "id": 5
+                }
+            ]
+        }
+    }
     ```
