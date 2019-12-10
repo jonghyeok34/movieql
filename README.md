@@ -205,3 +205,133 @@ server.start(() => console.log("GraphQl Server Running"));
         }
     }
     ```
+
+## 3. graphql list
+
+- file tree
+```
+- graphql
+    - db.js
+    - resolvers.js
+    - schema.graphql
+- index.js
+```
+- db.js
+```js
+export const people = [
+  {
+    id: "1",
+    name: "Jonghyeok",
+    age: 15,
+    gender: "male"
+  },
+  { id: "2", name: "Henry", age: 20, gender: "male" },
+  { id: "3", name: "Jeniffer", age: 19, gender: "female" },
+  { id: "4", name: "Suhyeon", age: 26, gender: "female" },
+  { id: "5", name: "Jinsoo", age: 30, gender: "male" },
+  { id: "6", name: "Chrstie", age: 29, gender: "female" },
+  { id: "7", name: "Charles", age: 32, gender: "male" }
+];
+
+// get by id
+const getById = id => {
+  const filteredPerson = movies.filter(person => id === people.id);
+  return filteredPerson[0];
+};
+
+```
+- resolver.js
+```js
+import { people, getById } from "./db";
+
+const resolvers = {
+  Query: {
+    people: () => people,
+    person: () => getById()
+  }
+};
+
+export default resolvers;
+
+
+```
+
+- schema.graphql
+```js
+type Person{
+    id: Int!
+    name: String!
+    age: Int!
+    gender: String!
+}
+
+type Query{
+    people: [Person]!
+    person(id: Int!): Person
+}
+
+```
+
+- index.js
+
+```js
+import { GraphQLServer } from "graphql-yoga";
+import resolvers from "./graphql/resolvers";
+
+const server = new GraphQLServer({
+  typeDefs: "graphql/schema.graphql",
+  resolvers
+});
+server.start(() => console.log("GraphQl Server Running"));
+
+```
+
+- server (localhost:4000)
+
+    - ping
+    ```js
+    query{
+        people{
+            name
+            id
+        }
+    }
+    ```
+    - pong
+    ```js
+    {
+        "data": {
+            "people": [
+            {
+                "name": "Jonghyeok",
+                "id": 1
+            },
+            {
+                "name": "Henry",
+                "id": 2
+            },
+            {
+                "name": "Jeniffer",
+                "id": 3
+            },
+            {
+                "name": "Suhyeon",
+                "id": 4
+            },
+            {
+                "name": "Jinsoo",
+                "id": 5
+            },
+            {
+                "name": "Chrstie",
+                "id": 6
+            },
+            {
+                "name": "Charles",
+                "id": 7
+            }
+            ]
+        }
+    }
+
+    ```
