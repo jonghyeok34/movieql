@@ -552,3 +552,95 @@ export default resolvers;
         }
     }
     ```
+
+## 5. use data from url
+```
+- graphql
+    - db.js
+    - resolver.js
+    - schema.graphql
+- index.js
+```
+
+
+1. db.js
+```cmd
+foo@bar:/path$ yarn add node-fetch
+```
+```js
+import fetch from "node-fetch";
+// movie website
+const API_URL = "https://yts.lt/api/v2/list_movies.json?";
+export const getMovies = (limit, rating) => {
+  let REQUEST_URL = API_URL;
+  if (limit > 0) {
+    REQUEST_URL += `limit=${limit}`;
+  }
+  if (rating > 0) {
+    REQUEST_URL += `&minimum_rating=${rating}`;
+  }
+  return fetch(REQUEST_URL)
+    .then(res => res.json())
+    .then(json => json.data.movies);
+};
+
+```
+2. resolvers.js
+```js
+import { getMovies } from "./db";
+
+const resolvers = {
+  Query: {
+    movies: (_, { rating, limit }) => getMovies(limit, rating)
+  }
+};
+
+export default resolvers;
+
+```
+
+3. schema.graphql
+
+```ts
+type Movie{
+    id: Int!
+    title: String!
+    rating: Float!
+    summary: String
+    language: String
+    medium_cover_image: String
+}
+
+
+type Query{
+    movies(limit: Int, rating:Float): [Movie]!
+    
+}
+```
+
+- result
+    - ping
+    ```
+    query{
+        movies(rating:8.5, limit:40){
+            title
+            rating
+            medium_cover_image
+        }
+    }
+    ```
+    - pong
+    ```
+    {
+    "data": {
+        "movies": [
+        {
+            "title": "Marriage Story",
+            "rating": 8.5,
+            "medium_cover_image": "https://yts.lt/assets/images/movies/marriage_story_2019/medium-cover.jpg"
+        },
+        ...
+    }
+    ```
+
+
