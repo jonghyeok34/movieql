@@ -1,4 +1,4 @@
-import { people, getById } from "./db";
+import { people, getById } from "../../graphql/db";
 
 const resolvers = {
   Query: {

@@ -1,4 +1,4 @@
-import { getMovies, getById, addMovie, deleteMovie } from "./db";
+import { getMovies, getById, addMovie, deleteMovie } from "../../graphql/db";
 
 const resolvers = {
   Query: {

@@ -1,7 +1,11 @@
-# movieql
-Movie API with Graphql
+# tutorial with movies
 
+Movie API with Graphql 
+Reference
+1. [youtuber Nomad coders](https://www.youtube.com/watch?v=EGFxCvefehc&list=PL7jH19IHhOLOpU_yAYzCO4iQNvdou1AnK&index=13)  
+2. [movie data api](https://yts.lt/api)
 
+## start
 ```cmd
 yarn init
 question name (movieql):
@@ -28,21 +32,22 @@ yarn add graphql-yoga
 
 ## 1. Problems solved by GraphQl
 
-- REST - problems ( overfetch/ underfetch)
+1. REST - problems ( overfetch/ underfetch)
+- overfetch : one query fetch unusing data, too
 ```
-[overfetch] - one query get unusing data, too
+/users/ GET (all profile info)  
+```
 
-/users/ GET (profile info)  
-
-
-[under fetch] - I have to call many url by query many url
-
+- under fetch - You have to call many url by query many url for one task
+```
+[get from several urls]
 /feed/
 /notifications/
 /user/1/
 ```
 
-- GraphQl : get only what I want
+2. GraphQl : get only what you want
+- request
 ```
 query {
     feed {
@@ -58,9 +63,9 @@ query {
     }
 
 }
-
-return:
-
+```
+- return
+```
 {
     feed:[
         {
@@ -81,28 +86,27 @@ return:
 
 ## 2. Make available to use "ES6" grammars like 'import"
 
-1. 		
+1. yarn add
 ```
 yarn add babel-node --dev
 yarn global add babel-cli --ignore-engines
 
-```		
+```
 2. Add to package.json
 ``` js
-    "scripts": {
-        "start": "nodemon --exec babel-node index.js" 
-      },
+"scripts": {
+    "start": "nodemon --exec babel-node index.js" 
+ },
 ```
-		
 3. Make .babelrc file and add 
-```
+```js
 {
     "presets": ["env", "stage-3"]
 }
 
 ```
 4. add babel sets to dev
-```		
+```cmd
 yarn add babel-cli babel-preset-env babel-preset-stage-3 --dev
 ```		
 5. package.json 
@@ -129,7 +133,7 @@ server.start(() => console.log("GraphQl Server Running"));
 
 ## 3. Schema / resolver
 
-- files
+- file tree
 ```
 - graphql
     - resolvers.js
@@ -140,8 +144,8 @@ server.start(() => console.log("GraphQl Server Running"));
 
 - resolvers.js
 ```js
-const jonghyeok = {
-  name: "Jonghyeok",
+const yourName = {
+  name: "My Name",
   age: 15,
   gender: "male"
 };
@@ -149,7 +153,7 @@ const jonghyeok = {
 const resolvers = {
   
   Query: {
-    person: () => jonghyeok
+    person: () => yourName
   }
 };
 
@@ -161,9 +165,9 @@ export default resolvers;
 
 ```js
 type Query{
-    person: Jonghyeok!
+    person: YourName!
 }
-type Jonghyeok{
+type YourName{
     name: String!
     age: Int!
     gender: String!
@@ -199,14 +203,14 @@ server.start(() => console.log("GraphQl Server Running"));
     {
         "data": {
             "person": {
-                "name": "Jonghyeok",
+                "name": "My name",
                 "age": 15
             }
         }
     }
     ```
 
-## 3. graphql list/ get by person id
+## 3. graphql list get by person id
 
 - file tree
 ```
@@ -288,7 +292,7 @@ server.start(() => console.log("GraphQl Server Running"));
 
 - server (localhost:4000)
 
-    - ping
+    - (request) get people by name and id
     ```js
     query{
         people{
@@ -297,7 +301,7 @@ server.start(() => console.log("GraphQl Server Running"));
         }
     }
     ```
-    - pong
+    - (response) people and their name and id
     ```js
     {
         "data": {
@@ -336,7 +340,7 @@ server.start(() => console.log("GraphQl Server Running"));
 
     ```
 
-    - get person info by id
+    - get person info by id (request)
     ```js
     query{
         person(id:1){
@@ -345,7 +349,7 @@ server.start(() => console.log("GraphQl Server Running"));
         }
     }
     ```
-    - person info by id
+    - person info by id (response)
     ```js
     {
     "data": {
@@ -359,7 +363,7 @@ server.start(() => console.log("GraphQl Server Running"));
 
 ## 4. movie - Mutation
 
-1. db.js - movie
+1. db.js - movies
 
 ```js
 export const movies = [
@@ -456,8 +460,8 @@ export default resolvers;
 ```
 
 4.  (localhost:4000)
-    - add movie
-    ```
+    - (request) add movie 
+    ```js
     mutation{
         addMovie(name: "funnName", score:9){
             name
@@ -465,7 +469,7 @@ export default resolvers;
     }
     ```
 
-    - add movie return
+    - (response) add movie return
     ```js
     {
     "data": {
@@ -476,7 +480,7 @@ export default resolvers;
     }
     ```
 
-    - result 
+    -  result : data added 
     
     ```js
     {
@@ -507,16 +511,16 @@ export default resolvers;
     }
     ```
 
-    - delete movie
+    - (request) delete movie
 
-    ```
+    ```js
     mutation{
         deleteMovie(id:0){
             name
         }
     }
     ```
-    - delete movie return
+    - (response) delete movie return
     ```js
     {
         "data": {
@@ -525,7 +529,7 @@ export default resolvers;
     }
     ```
 
-    - result 
+    - result : movie deleted
     
     ```js
     {
@@ -553,7 +557,13 @@ export default resolvers;
     }
     ```
 
-## 5. use data from url
+## 5. use data from REST API ( with fetch)
+- add fetch
+```cmd
+foo@bar:/path$ yarn add node-fetch
+```
+
+0. file tree
 ```
 - graphql
     - db.js
@@ -564,9 +574,7 @@ export default resolvers;
 
 
 1. db.js
-```cmd
-foo@bar:/path$ yarn add node-fetch
-```
+
 ```js
 import fetch from "node-fetch";
 // movie website
@@ -620,7 +628,7 @@ type Query{
 
 - result
     - ping
-    ```
+    ```js
     query{
         movies(rating:8.5, limit:40){
             title
@@ -630,7 +638,7 @@ type Query{
     }
     ```
     - pong
-    ```
+    ```js
     {
     "data": {
         "movies": [
@@ -644,3 +652,93 @@ type Query{
     ```
 
 
+## 6. wrapping REST( with axios)
+- add axios
+```
+yarn add axios
+```
+0. file tree
+
+```
+graphql
+    - db.js
+    - resolvers.js
+    - schema.graphql
+- index.js
+```
+1. db.js
+```js
+import axios from "axios";
+const BASE_URL = "https://yts.lt/api/v2/";
+const LIST_MOVIES_URL = `${BASE_URL}list_movies.json?`;
+const MOVIE_DETAILS_URL = `${BASE_URL}movie_details.json?`;
+const MOVIE_SUGGESTIONS_URL = `${BASE_URL}movie_suggestions.json?`;
+
+export const getMovies = async (limit, rating) => {
+  const {
+    data: {
+      data: { movies }
+    }
+  } = await axios(LIST_MOVIES_URL, {
+    params: {
+      limit,
+      minimum_rating: rating
+    }
+  });
+  return movies;
+};
+
+export const getMovie = async id => {
+  const {
+    data: {
+      data: { movie }
+    }
+  } = await axios(MOVIE_DETAILS_URL, {
+    params: {
+      movie_id: id
+    }
+  });
+  return movie;
+};
+
+export const getSuggestions = async id => {
+  const {
+    data: {
+      data: { movies }
+    }
+  } = await axios(MOVIE_SUGGESTIONS_URL, {
+    params: {
+      movie_id: id
+    }
+  });
+  return movies;
+};
+
+```
+
+3. schema.graphql
+```ts
+
+type Movie{
+    id: Int!
+    title: String!
+    
+    title_long: String!
+    genres: [String]
+    rating: Float!
+    summary: String
+    language: String
+    medium_cover_image: String
+    description_intro: String!
+    
+
+}
+
+
+type Query{
+    movies(limit: Int, rating:Float): [Movie]!
+    movie(id: Int): Movie
+    suggestions(id: Int): [Movie]
+}
+
+```
